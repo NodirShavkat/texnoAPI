@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product, Image
+from .models import Category, Product, Image, Order, Comment
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +11,7 @@ class CategoryUpdateSerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", 'name', 'slug', 'image', 'is_active']
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):               # same-same but different
     class Meta:
         model = Product
         exclude = ()
@@ -21,12 +21,32 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
         model = Product
         fields = ["id", 'name', 'description', 'price', 'category']
 
-class ProductOfCategoryModelSerializer(serializers.ModelSerializer):
+class ProductOfCategoryModelSerializer(serializers.ModelSerializer): # same-same but different
     class Meta:
         model = Product
         exclude = ()
 
 class ImageSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source = 'product.name')
     class Meta:
         model = Image
         exclude = ()
+
+class ImageUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ["id", 'payment_method', 'is_delivery', 'store_location', 'description', 'user', 'product']
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        exclude = () 
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default = serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Comment
+        fields = "__all__"

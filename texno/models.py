@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -36,9 +37,6 @@ class Image(models.Model):
                                  null=True)
     image = models.ImageField(upload_to='product/images')
 
-    def __str__(self):
-        return self.product
-
 
 class User(models.Model):
     username = models.CharField(max_length=255)
@@ -73,8 +71,7 @@ class Order(models.Model):
     # promocode = models.TextField()
     def __str__(self):
         return f'{self.user.username} - {self.product.name}'
-
-
+    
 
 class Comment(models.Model):
     class RatingChoices(models.IntegerChoices):
@@ -87,14 +84,18 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     rating = models.PositiveSmallIntegerField(choices=RatingChoices.choices, default = RatingChoices.FIVE)
-    user = models.ForeignKey('User', 
-                             related_name='comments',
-                             on_delete=models.SET_NULL,
-                             null=True)
-    product = models.ForeignKey('Product',
-                                related_name='comments',
-                                on_delete=models.SET_NULL,
-                                null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        related_name='comments',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    product = models.ForeignKey(
+        'Product',
+        related_name='comments',
+        on_delete=models.SET_NULL,
+        null=True
+    )
     
     def __str__(self):
         return self.product.name
