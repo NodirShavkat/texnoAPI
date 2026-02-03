@@ -134,7 +134,7 @@ class ImageCreateAPIView(CreateAPIView):
     serializer_class = serializers.ImageSerializer
 
 
-# class ImageListAPIView(APIView):
+# class ImageListAPIView(APIView): # <- APIView Pagination bilan ishlamas ekan
 #     permission_classes = [AllowAny]
 
 #     def get(self, request):
@@ -148,6 +148,9 @@ class ImageListAPIView(ListAPIView):
     serializer_class = serializers.ImageSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self): # Query Optimization
+        return Image.objects.select_related('product').all()
+    
 
 class ImageUpdateAPIView(APIView):
     permission_classes = [IsAdminUser]
