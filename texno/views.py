@@ -198,10 +198,52 @@ class ImageByProduct(APIView):
 
 # 6) Order lar uchun API
 class OrderCreateAPIView(CreateAPIView):
-    permission_classes = [IsAdminUser]
-    
     queryset = Order.objects.all()
     serializer_class = serializers.OrderSerializer
+
+
+class OrderListAPIView(ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = serializers.OrderSerializer
+    permission_classes = [IsAdminUser] 
+
+    def get_queryset(self): # Query Optimization
+        return Order.objects.select_related('product').all()
+    
+# Authentifikatsiyadan o'tgan user faqat o'zini orderlarini ko'ra oladigan view qilish kerak
+
+
+class OrderUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated | IsAdminUser]
+    
+    def put(self, request, order_id=None):
+        order = get_object_or_404(Order, id=order_id)
+
+        serializer = serializers.OrderUpdateSerializer(order, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"not valid", "details": serializer.errors})
+        
+    def patch(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+
+        serializer = serializers.OrderUpdateSerializer(order, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderDeleteAPIView(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def delete(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # 7) Commentslar uchun
@@ -209,6 +251,18 @@ class CommentCreateAPIView(CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+
+class CommentListAPIView():
+    pass
+
+
+class CommentUpdateAPIView():
+    pass
+
+
+class CommentDeleteAPIView():
+    pass
 
 
 # 8) Productga tegishli comments

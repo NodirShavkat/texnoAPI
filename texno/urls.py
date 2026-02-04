@@ -17,9 +17,17 @@ urlpatterns = [
     path('image/create', views.ImageCreateAPIView.as_view()),
     path('image/<int:product_id>/', views.ImageByProduct.as_view()),
     path('image/update/<int:image_id>/', views.ImageUpdateAPIView.as_view()),
-    
+    path('image/delete/<int:image_id>/', views.ImageDeleteAPIView.as_view()),
+
     path('order/create', views.OrderCreateAPIView.as_view()),
+    path('order', views.OrderListAPIView.as_view()),
+    path('order/update/<int:order_id>/', views.OrderUpdateAPIView.as_view()),
+    path('order/delete/<int:image_id>/', views.OrderDeleteAPIView.as_view()),
 
     path('comment/<int:product_id>/', views.CommentByProduct.as_view()),
     path('comment/create', views.CommentCreateAPIView.as_view()),
+    path('comment', views.CommentListAPIView.as_view()),
+    path('comment/update/<int:order_id>/', views.CommentUpdateAPIView.as_view()),
+    path('comment/delete/<int:image_id>/', views.CommentDeleteAPIView.as_view()),
+
 ]

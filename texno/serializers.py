@@ -35,12 +35,17 @@ class ImageSerializer(serializers.ModelSerializer):
 class ImageUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ["id", 'payment_method', 'is_delivery', 'store_location', 'description', 'user', 'product']
+        fields = ["id", 'product', 'image']
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         exclude = () 
+
+class OrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["id", 'payment_method', 'is_delivery', 'store_location', 'description', 'user', 'product']
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
