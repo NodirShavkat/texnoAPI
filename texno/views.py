@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 
 # 1) Category uchun API chiqarasiz. CRUD => 
 class CategoryCreateAPIView(CreateAPIView):
-    permission_classes = [IsAdminUser] # is_staff=True bo'lganlar view dan foydalana oladi
+    permission_classes = [IsAdminUser] 
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
 
@@ -134,15 +134,6 @@ class ImageCreateAPIView(CreateAPIView):
     serializer_class = serializers.ImageSerializer
 
 
-# class ImageListAPIView(APIView): # <- APIView Pagination bilan ishlamas ekan
-#     permission_classes = [AllowAny]
-
-#     def get(self, request):
-#         queryset = Image.objects.all()
-#         serializer = serializers.ImageSerializer(queryset, many=True)
-#         data = serializer.data
-#         return Response(data)
-    
 class ImageListAPIView(ListAPIView):
     queryset = Image.objects.all()
     serializer_class = serializers.ImageSerializer
@@ -250,19 +241,49 @@ class OrderDeleteAPIView(APIView):
 class CommentCreateAPIView(CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated | IsAdminUser]
 
 
-class CommentListAPIView():
-    pass
+class CommentListAPIView(ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [AllowAny] 
+
+    # def get_queryset(self):
+    #     return Comment.objects.select_related('product').all()
 
 
-class CommentUpdateAPIView():
-    pass
+class CommentUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated | IsAdminUser]
+    
+    def put(self, request, comment_id=None):
+        comment = get_object_or_404(Comment, id=comment_id)
+
+        serializer = serializers.CommentUpdateSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"not valid", "details": serializer.errors})
+        
+    def patch(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+
+        serializer = serializers.CommentUpdateSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CommentDeleteAPIView():
-    pass
+class CommentDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated | IsAdminUser]
+    
+    def delete(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # 8) Productga tegishli comments
