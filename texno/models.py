@@ -45,7 +45,7 @@ class User(models.Model):
     products = models.ManyToManyField(Product, blank=True) # users_products => like
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Order(models.Model):
@@ -60,7 +60,7 @@ class Order(models.Model):
     is_delivery = models.BooleanField()
     store_location = models.CharField()
     description = models.TextField()
-    user = models.ForeignKey('User', 
+    user = models.ForeignKey('user.User', 
                              related_name='orders',
                              on_delete=models.SET_NULL,
                              null=True)
@@ -70,7 +70,7 @@ class Order(models.Model):
                                 null=True)
     # promocode = models.TextField()
     def __str__(self):
-        return f'{self.user.username} - {self.product.name}'
+        return f'{self.user} - {self.product}'
     
 
 class Comment(models.Model):

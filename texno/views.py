@@ -198,8 +198,8 @@ class OrderListAPIView(ListAPIView):
     serializer_class = serializers.OrderSerializer
     permission_classes = [IsAdminUser] 
 
-    def get_queryset(self): # Query Optimization
-        return Order.objects.select_related('product').all()
+    # def get_queryset(self): # Query Optimization
+    #     return Order.objects.select_related('product').all()
     
 # Authentifikatsiyadan o'tgan user faqat o'zini orderlarini ko'ra oladigan view qilish kerak
 
@@ -280,9 +280,9 @@ class CommentUpdateAPIView(APIView):
 class CommentDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated | IsAdminUser]
     
-    def delete(self, request, order_id):
-        order = get_object_or_404(Order, id=order_id)
-        order.delete()
+    def delete(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

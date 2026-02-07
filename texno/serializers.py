@@ -43,6 +43,7 @@ class OrderSerializer(serializers.ModelSerializer):
         exclude = () 
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = Order
         fields = ["id", 'payment_method', 'is_delivery', 'store_location', 'description', 'user', 'product']
