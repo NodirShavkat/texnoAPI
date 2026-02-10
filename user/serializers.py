@@ -2,11 +2,12 @@ from rest_framework import serializers
 from .models import User
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'password2']
+        fields = ['username', 'email', 'password', 'password2']
         extra_kwatgs = { 'password': {'write_only': True}}
 
     def validate(self, attrs):
@@ -17,7 +18,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             username = validated_data['username'],
-            # email = validated_data['email'],
+            email = validated_data['email'],
             password = validated_data['password']
         )
         return user

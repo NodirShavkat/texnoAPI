@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserRegistrationSerializer, UserSerializer
 from .models import User
+from .tasks import send_welcome_email
 
 class SampleView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -13,11 +14,15 @@ class SampleView(CreateAPIView):
         return Response({"message": "Only authenticated users can see this."})
 
 class UserRegisterationView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.save()
+            
+            send_welcome_email.delay(request.data["email"])
+            
             return Response({
                 "message": "User registered successfully"
             }, status=status.HTTP_201_CREATED)
